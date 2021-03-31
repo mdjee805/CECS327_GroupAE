@@ -27,13 +27,11 @@ public class PingingThread extends Thread {
         this.subnet = subnet;
         this.timeout = timeout;
         this.ipAddresses = ipAddresses;
-        //FindIpAddresses.threadCreated();
     }
 
     @Override
     public void run() {
         try {
-            FindIpAddresses.threadsRunning();
             for (int i = start; i < end; i++) {
                 String host = subnet + "." + i;
                 try {
@@ -47,8 +45,6 @@ public class PingingThread extends Thread {
                 } catch (UnknownHostException e) {
                 }
             }
-        } catch (IOException e) {
-        }
-        finally{ FindIpAddresses.threadsCompleted(); /*System.out.println("done");*/}
+        } catch (IOException e) {}
     }
 }

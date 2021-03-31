@@ -19,7 +19,6 @@ public class FindIpAddresses {
 
     static private ArrayList<String> ipAddresses;
     static private String subnet;
-    static private int threadsCompleted, threadsRunning;
 
     public FindIpAddresses() {
         String ip;
@@ -36,7 +35,6 @@ public class FindIpAddresses {
 
         int timeout = 1000, threads = 64, devices = 255, split = devices / threads; //minimum timeout from methods .isReachable calls seems to be 1sec
         ipAddresses = new ArrayList<String>();
-        threadsRunning = 0;
         for (int i = 0; i < threads; ++i) {
             PingingThread thread = new PingingThread(split * i, split * (i + 1), subnet, timeout, ipAddresses);
             thread.start();
@@ -54,13 +52,5 @@ public class FindIpAddresses {
         for (String s : ipAddresses) {
             System.out.println(s);
         }
-    }
-
-    public static void threadsRunning() {
-        ++threadsRunning;
-    }
-
-    public static void threadsCompleted() {
-        ++threadsCompleted;
     }
 }

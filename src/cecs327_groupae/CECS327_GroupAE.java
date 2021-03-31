@@ -4,6 +4,7 @@
  * and open the template in the editor.
  */
 package cecs327_groupae;
+import java.io.IOException;
 
 /**
  *
@@ -19,7 +20,15 @@ public class CECS327_GroupAE {
     public static void main(String[] args) {
         // TODO code application logic here
 
-        FindIpAddresses fia = new FindIpAddresses();
+        try{
+        //FindIpAddresses fia = new FindIpAddresses();
         
+        //Client client = new Client();
+        //client.start();
+        
+        Server server = new Server();
+        server.start();
+        }
+        catch(IOException e) {}
     }
 }

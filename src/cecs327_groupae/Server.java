@@ -36,8 +36,8 @@ public class Server extends Thread {
                 try
                 {
                     Socket socket = serverSocket.accept();
-                    
-                    System.out.println("Connected");
+                    RequestHandler reqHand = new RequestHandler(socket);
+                    reqHand.start();
                     
                     isConnected = true;
                 }

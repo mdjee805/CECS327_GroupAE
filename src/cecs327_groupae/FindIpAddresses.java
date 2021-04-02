@@ -53,4 +53,6 @@ public class FindIpAddresses {
             System.out.println(s);
         }
     }
+    
+    public ArrayList<String> getNodes() { return ipAddresses; }
 }

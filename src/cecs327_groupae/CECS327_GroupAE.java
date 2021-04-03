@@ -22,22 +22,22 @@ public class CECS327_GroupAE {
     public static void main(String[] args) {
         // TODO code application logic here
         
-        //try{
+        try{
         FindIpAddresses fia = new FindIpAddresses();
         nodes = fia.getNodes();
         
-        //Client client = new Client();
-        //client.start();
+        Client client = new Client();
+        client.start();
         
-        //Server server = new Server();
-        //server.start();
+        Server server = new Server();
+        server.start();
         
-        FileClient fc = new FileClient(PORT, CLIENT_FILE_PATH);
-        fc.start();
+        //FileClient fc = new FileClient(PORT, CLIENT_FILE_PATH);
+        //fc.start();
         
-        FileServer fs = new FileServer(nodes.get(0), PORT, SERVER_FILE_PATH);
-        fs.start();
-        //}
-        //catch(IOException e) {}
+        //FileServer fs = new FileServer(nodes.get(0), PORT, SERVER_FILE_PATH);
+        //fs.start();
+        }
+        catch(IOException e) {}
     }
 }

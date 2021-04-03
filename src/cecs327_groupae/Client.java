@@ -7,9 +7,13 @@ package cecs327_groupae;
 
 import java.io.BufferedReader;
 import java.io.IOException;
+import java.io.InputStream;
 import java.io.InputStreamReader;
+import java.io.ObjectInputStream;
 import java.io.PrintStream;
 import java.net.Socket;
+import java.util.Hashtable;
+import java.util.Set;
 
 /**
  *
@@ -30,7 +34,7 @@ public class Client extends Thread {
                 System.out.println("Listening for a server");
 
                 // Connect to the server
-                Socket socket = new Socket(server, port);
+                /*Socket socket = new Socket(server, port);
 
                 // Create input and output streams to read from and write to the server
                 PrintStream out = new PrintStream(socket.getOutputStream());
@@ -40,10 +44,20 @@ public class Client extends Thread {
                 /*out.println("GET " + path + " HTTP/1.0");
             out.println();*/
                 // Read data from the server until we finish reading the document
-                String line = in.readLine();
+                /*String line = in.readLine();
                 while (line != null) {
                     System.out.println(line);
                     line = in.readLine();
+                }*/
+                
+                InputStream is = socket.getInputStream();
+                ObjectInputStream ois = new ObjectInputStream(is);
+                Hashtable testHashDHT = (Hashtable) ois.readObject();
+                
+                Set<String> tableSet = testHashDHT.keySet();
+                for(String key : tableSet)
+                {
+                    System.out.println("key: " + key + " // value: " + testHashDHT.get(key));
                 }
                 
                 isConnected = true;

@@ -8,8 +8,10 @@ package cecs327_groupae;
 import java.io.BufferedReader;
 import java.io.IOException;
 import java.io.InputStreamReader;
+import java.io.ObjectOutputStream;
 import java.io.PrintWriter;
 import java.net.Socket;
+import java.util.Hashtable;
 
 /**
  *
@@ -18,10 +20,16 @@ import java.net.Socket;
 public class RequestHandler extends Thread{
     
     private Socket socket;
+    private Hashtable hashTestDHT;
     
     public RequestHandler(Socket socket)
     {
         this.socket = socket;
+        hashTestDHT = new Hashtable();
+        hashTestDHT.put("Michael", "china numbah one");
+        hashTestDHT.put("Bryan", "taiwan numbah one");
+        hashTestDHT.put("Minh", "korea numbah one");
+        hashTestDHT.put("Alissa", "japan numbah one");
     }
     
     @Override
@@ -40,7 +48,7 @@ public class RequestHandler extends Thread{
             System.out.println( "Received a connection" );
 
             // Get input and output streams
-            BufferedReader in = new BufferedReader( new InputStreamReader( socket.getInputStream() ) );
+            /*BufferedReader in = new BufferedReader( new InputStreamReader( socket.getInputStream() ) );
             PrintWriter out = new PrintWriter( socket.getOutputStream() );
 
             // Write out our header to the client
@@ -54,7 +62,11 @@ public class RequestHandler extends Thread{
                 out.println( "Echo: " + line );
                 out.flush();
                 line = in.readLine();
-            }
+            }*/
+            
+            ObjectOutputStream oos = new ObjectOutputStream(socket.getOutputStream());
+            oos.writeObject(hashTestDHT);
+            oos.close();
 
             // Close our connection
             //in.close();

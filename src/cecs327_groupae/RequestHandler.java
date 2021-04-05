@@ -7,10 +7,13 @@ package cecs327_groupae;
 
 import java.io.BufferedReader;
 import java.io.IOException;
+import java.io.InputStream;
 import java.io.InputStreamReader;
+import java.io.ObjectInputStream;
 import java.io.ObjectOutputStream;
 import java.io.PrintWriter;
 import java.net.Socket;
+import java.util.ArrayList;
 import java.util.Hashtable;
 
 /**
@@ -21,15 +24,19 @@ public class RequestHandler extends Thread{
     
     private Socket socket;
     private Hashtable hashTestDHT;
+    private ArrayList<String> prevNextNodes;
+    private int port;
     
-    public RequestHandler(Socket socket)
+    public RequestHandler(Socket socket, ArrayList<String> prevNextNodes, int port)
     {
         this.socket = socket;
-        hashTestDHT = new Hashtable();
+        /*hashTestDHT = new Hashtable();
         hashTestDHT.put("Michael", "china numbah one");
         hashTestDHT.put("Bryan", "taiwan numbah one");
         hashTestDHT.put("Minh", "korea numbah one");
-        hashTestDHT.put("Alissa", "japan numbah one");
+        hashTestDHT.put("Alissa", "japan numbah one");*/
+        this.prevNextNodes = prevNextNodes;
+        this.port = port;
     }
     
     @Override
@@ -64,9 +71,38 @@ public class RequestHandler extends Thread{
                 line = in.readLine();
             }*/
             
-            ObjectOutputStream oos = new ObjectOutputStream(socket.getOutputStream());
+            /*ObjectOutputStream oos = new ObjectOutputStream(socket.getOutputStream());
             oos.writeObject(hashTestDHT);
-            oos.close();
+            oos.close();*/
+            
+            ObjectOutputStream oos = new ObjectOutputStream(socket.getOutputStream());
+            //oos.writeObject(hashTestDHT);
+            oos.writeObject(prevNextNodes);
+            
+            //Socket client = new Socket(socket.getInetAddress().toString().substring(1))
+            InputStream is = socket.getInputStream();
+            ObjectInputStream ois = new ObjectInputStream(is);
+            //Socket serverSocket = (Socket) ois.readObject();
+            ArrayList<String> temp = (ArrayList<String>) ois.readObject();
+            
+            prevNextNodes.set(0, temp.get(0));
+            System.out.println("previous: " + prevNextNodes.get(0));
+            if (prevNextNodes.get(0) == "") { //if we have 1 node in network, we set previos to the client
+                prevNextNodes.set(0, socket.getInetAddress().toString().substring(1));
+                System.out.println("previous: " + prevNextNodes.get(0));
+            }
+            else //if network has more than 1 node, we tell the original previous that its new previous is the original client
+            {
+                Socket prevSocket = new Socket(prevNextNodes.get(0), port);
+                oos = new ObjectOutputStream(prevSocket.getOutputStream());
+                oos.writeObject(socket.getInetAddress().toString().substring(1));
+            }
+
+            //we always set the next node to the client
+            prevNextNodes.set(1, temp.get(1));
+            System.out.println("next: " + prevNextNodes.get(1));
+            prevNextNodes.set(1, socket.getInetAddress().toString().substring(1));
+            System.out.println("next: " + prevNextNodes.get(1));
 
             // Close our connection
             //in.close();

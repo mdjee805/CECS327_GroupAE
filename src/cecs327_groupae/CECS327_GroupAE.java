@@ -5,6 +5,7 @@
  */
 package cecs327_groupae;
 import java.io.IOException;
+import java.net.Socket;
 import java.util.ArrayList;
 
 /**
@@ -21,23 +22,38 @@ public class CECS327_GroupAE {
      */
     public static void main(String[] args) {
         // TODO code application logic here
+        ArrayList<String> prevNextNodes = new ArrayList<String>();
+        prevNextNodes.add("");
+        prevNextNodes.add("");
+        //ArrayList<String> nodes;
+        ArrayList<Socket> nodes;
         
-        try{
-        FindIpAddresses fia = new FindIpAddresses();
-        nodes = fia.getNodes();
+        try {
+        //FindIpAddresses findIps = new FindIpAddresses();
+        //nodes = findIps.getSockets();
         
-        Client client = new Client();
-        client.start();
-        
-        Server server = new Server();
+        Server server = new Server(prevNextNodes);
         server.start();
         
-        //FileClient fc = new FileClient(PORT, CLIENT_FILE_PATH);
-        //fc.start();
-        
-        //FileServer fs = new FileServer(nodes.get(0), PORT, SERVER_FILE_PATH);
-        //fs.start();
+        /*try{
+            Thread.sleep(100);
         }
-        catch(IOException e) {}
+        catch(InterruptedException e) {}
+
+        if(!nodes.isEmpty())
+        {
+            Client client = new Client(nodes.get(0), prevNextNodes);
+            client.start();
+        }*/
+        
+        try{
+            Thread.sleep(3000);
+        }
+        catch (InterruptedException e) {}
+        
+        System.out.println(prevNextNodes.get(0) + " " + prevNextNodes.get(0));
+        
+        }
+        catch (IOException e) {}
     }
 }

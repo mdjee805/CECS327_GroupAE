@@ -10,8 +10,10 @@ import java.io.IOException;
 import java.io.InputStream;
 import java.io.InputStreamReader;
 import java.io.ObjectInputStream;
+import java.io.ObjectOutputStream;
 import java.io.PrintStream;
 import java.net.Socket;
+import java.util.ArrayList;
 import java.util.Hashtable;
 import java.util.Set;
 
@@ -21,12 +23,15 @@ import java.util.Set;
  */
 public class Client extends Thread {
     
-    private String server = "192.168.254.18";//, path = "/search?q=banana";
-    private int port = 43594;
+    private String server;//, path = "/search?q=banana";
+    private int port = 9000;
     boolean isConnected = false;
     private Socket socket;
+    private ArrayList<String> prevNextNodes;
 
-    public Client() throws IOException {
+    public Client(Socket serverIp, ArrayList<String> prevNextNodes) throws IOException {
+        
+        this.prevNextNodes = prevNextNodes;
         
         while (!isConnected) {
             
@@ -50,7 +55,7 @@ public class Client extends Thread {
                     line = in.readLine();
                 }*/
                 
-                InputStream is = socket.getInputStream();
+                /*InputStream is = socket.getInputStream();
                 ObjectInputStream ois = new ObjectInputStream(is);
                 Hashtable testHashDHT = (Hashtable) ois.readObject();
                 
@@ -58,7 +63,31 @@ public class Client extends Thread {
                 for(String key : tableSet)
                 {
                     System.out.println("key: " + key + " // value: " + testHashDHT.get(key));
+                }*/
+                
+                Socket socket = serverIp;
+                
+                ObjectOutputStream oos = new ObjectOutputStream(socket.getOutputStream());
+                oos.writeObject(prevNextNodes);
+                
+                InputStream is = socket.getInputStream();
+                ObjectInputStream ois = new ObjectInputStream(is);
+                //Socket serverSocket = (Socket) ois.readObject();
+                ArrayList<String> temp = (ArrayList<String>) ois.readObject();
+                
+                prevNextNodes.set(0, temp.get(0));
+                System.out.println("previous: " + prevNextNodes.get(0));
+                 //client's previous is always the server
+                prevNextNodes.set(0, socket.getInetAddress().toString().substring(1));
+                System.out.println("previous: " + prevNextNodes.get(0));
+                
+                prevNextNodes.set(1, temp.get(1));
+                System.out.println("next: " + prevNextNodes.get(1));
+                if(prevNextNodes.get(1) == "") //if there is 1 node in the network, we set next as the server, otherwise we steal the server's next
+                {
+                    prevNextNodes.set(1, socket.getInetAddress().toString().substring(1));
                 }
+                System.out.println("next: " + prevNextNodes.get(1));
                 
                 isConnected = true;
 

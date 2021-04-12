@@ -5,7 +5,10 @@
  */
 package cecs327_groupae;
 
+import com.google.common.collect.ArrayListMultimap;
+import com.google.common.collect.Multimap;
 import java.io.BufferedReader;
+import java.io.File;
 import java.io.IOException;
 import java.io.InputStream;
 import java.io.InputStreamReader;
@@ -13,7 +16,10 @@ import java.io.ObjectInputStream;
 import java.io.ObjectOutputStream;
 import java.io.PrintWriter;
 import java.net.Socket;
+import java.nio.file.Path;
+import java.nio.file.Paths;
 import java.util.ArrayList;
+import java.util.Date;
 import java.util.Hashtable;
 
 /**
@@ -26,6 +32,9 @@ public class RequestHandler extends Thread{
     private Hashtable hashTestDHT;
     private ArrayList<String> prevNextNodes;
     private int port;
+    private final Path path = Paths.get("C:/cecs327");
+    private File[] files;
+    private NodeVariables nv;
     
     public RequestHandler(Socket socket, ArrayList<String> prevNextNodes, int port)
     {
@@ -37,6 +46,9 @@ public class RequestHandler extends Thread{
         hashTestDHT.put("Alissa", "japan numbah one");*/
         this.prevNextNodes = prevNextNodes;
         this.port = port;
+        File directory = path.toFile();
+        files = directory.listFiles();
+        nv = NodeVariablesSingleton.getNodeVariablesSingleton();
     }
     
     @Override
@@ -54,6 +66,10 @@ public class RequestHandler extends Thread{
         {
             System.out.println( "Received a connection" );
 
+            for(File f : files)
+            {
+                System.out.println(f.getName());
+            }
             // Get input and output streams
             /*BufferedReader in = new BufferedReader( new InputStreamReader( socket.getInputStream() ) );
             PrintWriter out = new PrintWriter( socket.getOutputStream() );
@@ -71,10 +87,6 @@ public class RequestHandler extends Thread{
                 line = in.readLine();
             }*/
             
-            /*ObjectOutputStream oos = new ObjectOutputStream(socket.getOutputStream());
-            oos.writeObject(hashTestDHT);
-            oos.close();*/
-            
             ObjectOutputStream oos = new ObjectOutputStream(socket.getOutputStream());
             //oos.writeObject(hashTestDHT);
             oos.writeObject(prevNextNodes);
@@ -90,8 +102,7 @@ public class RequestHandler extends Thread{
             if (prevNextNodes.get(0) == "") { //if we have 1 node in network, we set previos to the client
                 prevNextNodes.set(0, socket.getInetAddress().toString().substring(1));
                 System.out.println("previous: " + prevNextNodes.get(0));
-            }
-            else //if network has more than 1 node, we tell the original previous that its new previous is the original client
+            } else //if network has more than 1 node, we tell the original previous that its new previous is the original client
             {
                 Socket prevSocket = new Socket(prevNextNodes.get(0), port);
                 oos = new ObjectOutputStream(prevSocket.getOutputStream());
@@ -104,6 +115,32 @@ public class RequestHandler extends Thread{
             prevNextNodes.set(1, socket.getInetAddress().toString().substring(1));
             System.out.println("next: " + prevNextNodes.get(1));
 
+            //create new dht from local folder
+            Multimap<String, String> multimap = ArrayListMultimap.create();
+            for (File f : files) {
+                multimap.put(f.getName(), Long.toString(f.lastModified()));
+            }
+            
+            //compare new dht to stored
+            if(!nv.getDht().equals(multimap)) //if dhts not equal
+            {
+                nv.setDht(multimap);
+                Date dt = new Date();
+                nv.setDhtTime(dt.getTime());
+            }
+
+            oos.writeObject(multimap);
+            
+            //send dht timestamp    
+            if(multimap.isEmpty())
+            {
+                oos.writeObject(0);
+            }
+            else
+            {
+                oos.writeObject(nv.getDhtTime());
+            }
+
             // Close our connection
             //in.close();
             //out.close();
@@ -111,6 +148,7 @@ public class RequestHandler extends Thread{
 
             System.out.println( "Connection closed" );
             
+            //NioSocketServer nss = new NioSocketServer();
         }
         catch( Exception e )
         {

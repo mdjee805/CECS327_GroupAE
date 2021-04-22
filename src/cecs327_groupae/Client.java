@@ -5,18 +5,20 @@
  */
 package cecs327_groupae;
 
+import com.google.common.collect.ArrayListMultimap;
 import com.google.common.collect.Multimap;
 import java.io.BufferedReader;
-import java.io.IOException;
-import java.io.InputStream;
+import java.io.File;
 import java.io.InputStreamReader;
-import java.io.ObjectInputStream;
-import java.io.ObjectOutputStream;
 import java.io.PrintStream;
 import java.net.Socket;
-import java.util.ArrayList;
-import java.util.Hashtable;
-import java.util.Set;
+import java.io.IOException;
+import java.io.InputStream;
+import java.io.ObjectInputStream;
+import java.io.ObjectOutputStream;
+import java.nio.file.Path;
+import java.nio.file.Paths;
+import java.util.*;
 
 /**
  *
@@ -25,52 +27,42 @@ import java.util.Set;
 public class Client extends Thread {
     
     private String server;//, path = "/search?q=banana";
-    private int port = 9000;
+    private int port;
     boolean isConnected = false;
     private Socket socket;
     private ArrayList<String> prevNextNodes;
-    private NodeVariables nv;
+    private File[] files;
+    private final Path path = Paths.get(CECS327_GroupAE.DIRECTORY_PATH);
+    //private NodeVariables nv;
 
-    public Client(Socket serverIp, ArrayList<String> prevNextNodes) throws IOException {
-        
+    public Client(Socket serverIp, ArrayList<String> prevNextNodes)
+    {
         this.prevNextNodes = prevNextNodes;
-        nv = NodeVariablesSingleton.getNodeVariablesSingleton();
-        
+        this.socket = serverIp;
+        this.port = Integer.parseInt(CECS327_GroupAE.PORT);
+        File directory = path.toFile();
+        this.files = directory.listFiles();
+    }
+    
+    public void connect() throws IOException {
+        //nv = NodeVariablesSingleton.getNodeVariablesSingleton();
         while (!isConnected) {
-            
             try {
                 System.out.println("Listening for a server");
-
-                //server = serverIp;
                 
-                // Connect to the server
-                //Socket socket = new Socket(server, port);
-                Socket socket = serverIp;
-                
-                // Create input and output streams to read from and write to the server
-                /*PrintStream out = new PrintStream(socket.getOutputStream());
-                BufferedReader in = new BufferedReader(new InputStreamReader(socket.getInputStream()));
-
-                // Follow the HTTP protocol of GET <path> HTTP/1.0 followed by an empty line
-                /*out.println("GET " + path + " HTTP/1.0");
-            out.println();*/
-                // Read data from the server until we finish reading the document
-                /*String line = in.readLine();
-                while (line != null) {
-                    System.out.println(line);
-                    line = in.readLine();
-                }*/
-                
+                //send over the previous and next nodes' ip addreeses
                 ObjectOutputStream oos = new ObjectOutputStream(socket.getOutputStream());
                 oos.writeObject(prevNextNodes);
                 
+                //receive server's previous and next nodes' ip addresses
                 InputStream is = socket.getInputStream();
                 ObjectInputStream ois = new ObjectInputStream(is);
-                //Socket serverSocket = (Socket) ois.readObject();
                 ArrayList<String> temp = (ArrayList<String>) ois.readObject();
                 
-                prevNextNodes.set(0, temp.get(0));
+                //join network
+                prevNextNodes.set(0, temp.get(0)); //set client's previous node to client's previous node ip
                 System.out.println("previous: " + prevNextNodes.get(0));
+                
                  //client's previous is always the server
                 prevNextNodes.set(0, socket.getInetAddress().toString().substring(1));
                 System.out.println("previous: " + prevNextNodes.get(0));
@@ -82,47 +74,78 @@ public class Client extends Thread {
                     prevNextNodes.set(1, socket.getInetAddress().toString().substring(1));
                 }
                 System.out.println("next: " + prevNextNodes.get(1));
-                /*Hashtable testHashDHT = (Hashtable) ois.readObject();
                 
-                Set<String> tableSet = testHashDHT.keySet();
-                for(String key : tableSet)
-                {
-                    System.out.println("key: " + key + " // value: " + testHashDHT.get(key));
-                }*/
-                
-                
-                Multimap<String, String> multimap = (Multimap<String, String>) ois.readObject();
-                Set<String> set = multimap.keySet();
+                //receive hashtable from server
+                Map<String, String> serverFileMap = (HashMap<String, String>) ois.readObject();
+                Set<String> set = serverFileMap.keySet();
                 for(String s : set)
                 {
                     System.out.println("Key: " + s);
-                    System.out.println("Value: " + multimap.get(s));
+                    System.out.println("Value: " + serverFileMap.get(s));
                 }
                 
-                long multimapTime = (long) ois.readObject();
+                //make a fresh hashtable from local files
+                Map<String, String> fileMap = new HashMap<>();
+                for (File f : files) {
+                    fileMap.put(f.getName(), Long.toString(f.lastModified()));
+                    //System.out.println("file: " + f.getName());
+                }
                 
-                //*leave for now
-                if(nv.getDht() == null) //if node does not have a dht yet
+                
+                //create a filelist of names of files client wants
+                ArrayList<String> fileList = new ArrayList<>();
+                fileList.add("gimme files");
+                //merge the two hashtables
+                if(!fileMap.equals(serverFileMap))//see if hashtables equal
                 {
-                    nv.setDht(multimap);
+                    Map<String, String> tempFileMap = new HashMap<>(); //if not make a temp hashtable
+                    tempFileMap.putAll(fileMap); //copy the client file info into it
+                    
+                    for(String s : set) //loop over the server files and see which are different
+                    {
+                        if(tempFileMap.containsKey(s)) //if filenames are the same, get the server's copy if contents are different
+                        {
+                            if(!tempFileMap.get(s).equals(serverFileMap.get(s)))
+                            {
+                                tempFileMap.put(s, serverFileMap.get(s)); //theoretically, compare the file contents hashed here and use that for file merging
+                                fileList.add(s); //add to list to send to server which files client wants
+                            }
+                        }
+                        else  //if client does not have the file, add to dht and request from server
+                        {
+                            tempFileMap.put(s, serverFileMap.get(s));
+                            fileList.add(s); //add to list to send to server which files client wants
+                        }
+                    }
                 }
                 else
                 {
-                    if(nv.getDhtTime() < multimapTime) //else if our local dht is out of date, reassign
-                    {
-                        nv.setDht(multimap);
-                        nv.setDhtTime(multimapTime);
-                    }
+                    fileList.set(0, "nah I'm good");
+                }
+                oos.writeObject(fileList);
+                for(int i = 0; i < fileList.size(); ++i)
+                {
+                    System.out.println(fileList.get(i));
+                }
+                
+                //loop over number of strings in the requestedfileslist and prepare to receive
+                //that many files
+                FileClient fc = null;
+                if(fileList.size() > 1)
+                {
+                    fc = new FileClient();
+                    fc.start();
+                }
+                Thread.sleep(1000);
+                for(int i = 1; i < fileList.size(); ++i)
+                {
+                    fc.receiveFile();
+                    System.out.println("receiving file");                 
+                    Thread.sleep(1000);
                 }
                 
                 isConnected = true;
 
-                // Close our streams
-//                in.close();
-//                out.close();
-                //socket.close();
-                
-                //NioSocketServer nss = new NioSocketServer();
             } catch (Exception e) {
                 e.printStackTrace();
             }
@@ -134,5 +157,11 @@ public class Client extends Thread {
     }
     
     @Override
-    public void run() {super.run();}
+    public void run() {
+        super.run();
+        try{
+            connect();
+        }
+        catch(IOException e) {}
+    }
 }

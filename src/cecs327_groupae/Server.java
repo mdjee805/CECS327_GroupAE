@@ -5,9 +5,13 @@
  */
 package cecs327_groupae;
 
-import java.io.IOException;
-import java.net.ServerSocket;
+import com.google.common.collect.Multimap;
+import java.io.BufferedReader;
+import java.io.InputStreamReader;
+import java.io.PrintStream;
 import java.net.Socket;
+import java.net.ServerSocket;
+import java.io.IOException;
 import java.net.SocketException;
 import java.util.ArrayList;
 
@@ -21,9 +25,12 @@ public class Server extends Thread {
     private boolean isConnected;
     private ServerSocket serverSocket;
     private ArrayList<String> prevNextNodes;
+    private String clientIp;
+    
+    public String getClientIp() { return clientIp; }
     
     public Server(ArrayList<String> prevNextNodes) throws IOException {
-        port = 9000;
+        port = Integer.parseInt(CECS327_GroupAE.PORT);
         isConnected = false;
         serverSocket = new ServerSocket(port); //open port
         this.prevNextNodes = prevNextNodes;
@@ -38,22 +45,25 @@ public class Server extends Thread {
                 //invoke accept method to listen on port
                 try
                 {
+                    //connect to client
                     Socket socket = serverSocket.accept();
-                    RequestHandler reqHand = new RequestHandler(socket, prevNextNodes, port);
+                    clientIp = socket.getInetAddress().getHostAddress();
+                    System.out.println(clientIp);
+                    
+                    //hand off to new thread to keep 'server' thread clear for more connections
+                    RequestHandler reqHand = new RequestHandler(socket, prevNextNodes);
                     reqHand.start();
                     isConnected = true;
                 }
                 catch(SocketException e)
                 {
                     System.out.println("Error connecting to port: " + String.valueOf(port));
+                    e.printStackTrace();
                 }
                 finally
                 {
                     serverSocket.close();
                 }
-
-                //close socket
-                //serverSocket.close();
             } catch (Exception e) {
                 e.printStackTrace();
             }

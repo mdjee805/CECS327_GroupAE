@@ -21,25 +21,20 @@ import java.util.EnumSet;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 
-public class FileClient extends Thread {
+public class FileClient {
 
     int port;
     String path;
     ObjectInputStream ois;
     ByteBuffer buffer;
     SocketChannel client;
+    ServerSocketChannel serverSocket;
 
     public FileClient() {
-        this.port = Integer.parseInt(CECS327_GroupAE.PORT);
+        this.port = Integer.parseInt(CECS327_GroupAE.PORT) + 1;
         this.path = CECS327_GroupAE.DIRECTORY_PATH;
-        this.buffer = ByteBuffer.allocate(10000);
-    }
-
-    @Override
-    public void run() {
-        super.run();
+        this.buffer = ByteBuffer.allocate(1024);
         try {
-            ServerSocketChannel serverSocket = null;
             client = null;
             serverSocket = ServerSocketChannel.open();
             serverSocket.socket().bind(new InetSocketAddress(port));
@@ -50,6 +45,12 @@ public class FileClient extends Thread {
             e.printStackTrace();
         }
     }
+
+    /*@Override
+    public void run() {
+        super.run();
+        
+    }*/
 
     public void receiveFile() throws IOException {
         try {
@@ -64,7 +65,7 @@ public class FileClient extends Thread {
                             StandardOpenOption.TRUNCATE_EXISTING,
                             StandardOpenOption.WRITE)
             );
-           // while (client.read(buffer)> 0) {
+            //while (client.read(buffer)> 0) {
             for (int j = 0; j < Math.ceil((fileSize + 0.0) / buffer.capacity()); ++j) {
                 //while(fileChannel.read(buffer) >= 0 || buffer.position() > 0){
                 client.read(buffer);
@@ -78,6 +79,8 @@ public class FileClient extends Thread {
             Logger.getLogger(FileClient.class.getName()).log(Level.SEVERE, null, ex);
         }
     }
+    
+    public void close() {try{client.close();serverSocket.close();}catch(IOException e){}}
 
     //client.close();
 }

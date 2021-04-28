@@ -34,14 +34,9 @@ public class FileServer extends Thread {
     private File directory;
     
     public FileServer(String clientIp) {
-        this.port = Integer.parseInt(CECS327_GroupAE.PORT);
+        this.port = Integer.parseInt(CECS327_GroupAE.PORT) + 1;
         this.clientIp = clientIp;
         this.path = CECS327_GroupAE.DIRECTORY_PATH;
-    }
-
-    @Override
-    public void run() {
-        super.run();
         try {
             //try to connect to client
             server = SocketChannel.open();
@@ -70,6 +65,12 @@ public class FileServer extends Thread {
         }*/
     }
 
+    /*@Override
+    public void run() {
+        super.run();
+        
+    }*/
+
     public void sendFile(File f) throws IOException {
         //open the file and push to buffer
         oos.writeObject(f.getAbsolutePath());
@@ -78,7 +79,7 @@ public class FileServer extends Thread {
         FileChannel fileChannel = FileChannel.open(f.toPath());
 
         //read 1 MB of buffer at a time and send it
-        while (fileChannel.read(buffer) > 0) {
+        while (fileChannel.read(buffer) >= 0 || buffer.position() > 0) {
             buffer.flip();
             server.write(buffer);
             buffer.clear();
@@ -86,4 +87,6 @@ public class FileServer extends Thread {
         fileChannel.close();
         System.out.println("File Sent");
     }
+    
+    public void close() { try{server.close();}catch(IOException e){} }
 }

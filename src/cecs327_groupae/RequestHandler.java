@@ -103,17 +103,28 @@ public class RequestHandler extends Thread{
 
             //await for response for which files the client wants, an empty array list means no files
             ArrayList<String> fileList = (ArrayList<String>) ois.readObject();
-            if (fileList.get(0).equals("gimme files")) {
-                FileServer fs = new FileServer(socket.getInetAddress().toString().substring(1));
-                fs.start();
-                Thread.sleep(1000);
-                //loop over the number of files wanted and send of the the files
+            
+            while(fileList.get(0).equals("gimme files")) {
+                FileServer ss = new FileServer(socket.getInetAddress().toString().substring(1));
+                try{
+                //ss.start();
+                //Thread.sleep(1000);
+                //loop over the number of files wanted and send of the the filesSocketServer ss = new SocketServer(socket.getInetAddress().toString().substring(1));
                 for (int i = 1; i < fileList.size(); ++i) {
                     File f = new File(CECS327_GroupAE.DIRECTORY_PATH + '/' + fileList.get(i));
                     if (f != null) {
-                        fs.sendFile(f);
-                        Thread.sleep(1000);
+                        ss.sendFile(f);
+                        Thread.sleep(100);
                     }
+                }
+                ss.close();
+                fileList = (ArrayList<String>) ois.readObject();
+                Thread.sleep(1000);
+                }
+                catch(IOException e) { 
+                    ss.close();
+                    fileList = (ArrayList<String>) ois.readObject();
+                    Thread.sleep(1000);
                 }
             }
 

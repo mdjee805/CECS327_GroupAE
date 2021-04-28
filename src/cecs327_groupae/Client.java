@@ -33,6 +33,10 @@ public class Client extends Thread {
     private ArrayList<String> prevNextNodes;
     private File[] files;
     private final Path path = Paths.get(CECS327_GroupAE.DIRECTORY_PATH);
+    private ArrayList<String> fileList;
+    private ObjectOutputStream oos;
+    private FileClient sc;
+    
     //private NodeVariables nv;
 
     public Client(Socket serverIp, ArrayList<String> prevNextNodes)
@@ -51,7 +55,7 @@ public class Client extends Thread {
                 System.out.println("Listening for a server");
                 
                 //send over the previous and next nodes' ip addreeses
-                ObjectOutputStream oos = new ObjectOutputStream(socket.getOutputStream());
+                oos = new ObjectOutputStream(socket.getOutputStream());
                 oos.writeObject(prevNextNodes);
                 
                 //receive server's previous and next nodes' ip addresses
@@ -93,7 +97,7 @@ public class Client extends Thread {
                 
                 
                 //create a filelist of names of files client wants
-                ArrayList<String> fileList = new ArrayList<>();
+                fileList = new ArrayList<>();
                 fileList.add("gimme files");
                 //merge the two hashtables
                 if(!fileMap.equals(serverFileMap))//see if hashtables equal
@@ -130,19 +134,14 @@ public class Client extends Thread {
                 
                 //loop over number of strings in the requestedfileslist and prepare to receive
                 //that many files
-                FileClient fc = null;
-                if(fileList.size() > 1)
+                /*if(fileList.size() > 1)
                 {
-                    fc = new FileClient();
-                    fc.start();
-                }
-                Thread.sleep(1000);
-                for(int i = 1; i < fileList.size(); ++i)
-                {
-                    fc.receiveFile();
-                    System.out.println("receiving file");                 
-                    Thread.sleep(1000);
-                }
+                    sc = new SocketClient();
+                    //sc.start();
+                }*/
+                //Thread.sleep(1000);
+                
+                getFiles();
                 
                 isConnected = true;
 
@@ -155,7 +154,29 @@ public class Client extends Thread {
             }
         }
     }
-    
+
+    private void getFiles() {
+        try{
+            sc = new FileClient();
+        for (int i = 1; i < fileList.size(); ++i) {
+            try {
+                System.out.println("receiving file: " + fileList.get(i));
+                sc.receiveFile();
+                fileList.remove(fileList.get(i));
+                Thread.sleep(100);
+            } catch (Exception e) {
+                System.out.println("Error transferring file");
+                oos.writeObject(fileList);
+                Thread.sleep(1000);
+                getFiles();
+            }
+            sc.close();
+        }
+        oos.writeObject(fileList);
+        }
+        catch(Exception e) { }
+    }
+
     @Override
     public void run() {
         super.run();

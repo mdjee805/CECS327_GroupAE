@@ -7,6 +7,7 @@ package cecs327_groupae;
 
 import java.io.IOException;
 import java.net.InetAddress;
+import java.net.Socket;
 import java.net.SocketException;
 import java.net.UnknownHostException;
 import java.util.ArrayList;
@@ -20,13 +21,15 @@ public class PingingThread extends Thread {
     int start, end, timeout;
     String subnet;
     ArrayList<String> ipAddresses;
+    ArrayList<Socket> ipSockets;
 
-    public PingingThread(int start, int end, String subnet, int timeout, ArrayList<String> ipAddresses) {
+    public PingingThread(int start, int end, String subnet, int timeout, ArrayList<String> ipAddresses, ArrayList<Socket> ipSockets) {
         this.start = start;
         this.end = end;
         this.subnet = subnet;
         this.timeout = timeout;
         this.ipAddresses = ipAddresses;
+        this.ipSockets = ipSockets;
     }
 
     @Override
@@ -36,15 +39,20 @@ public class PingingThread extends Thread {
                 String host = subnet + "." + i;
                 try {
                     if (InetAddress.getByName(host).isReachable(timeout)) {
-                        ipAddresses.add(host);
-                        //System.out.println(host + " is reachable");
-                    } /*else {
-                        System.out.println(host + " timed out");
-                    }*/
+                        //SocketChannel server = SocketChannel.open();
+                        //SocketAddress socketAddr = new InetSocketAddress(host, Integer.parseInt("9000"));
+                        Socket socket = new Socket(host, Integer.parseInt(CECS327_GroupAE.PORT));
+                        if (socket.isConnected()) {
+                            ipAddresses.add(host);
+                            ipSockets.add(socket);
+                        }
+                        //server.close();
+                    }
                 } catch (SocketException e) {
                 } catch (UnknownHostException e) {
                 }
             }
-        } catch (IOException e) {}
+        } catch (IOException e) {
+        }
     }
 }

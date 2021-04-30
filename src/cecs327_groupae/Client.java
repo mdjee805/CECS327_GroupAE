@@ -26,7 +26,7 @@ import java.util.*;
  */
 public class Client extends Thread {
     
-    private String server;//, path = "/search?q=banana";
+        private String server;//, path = "/search?q=banana";
     private int port;
     boolean isConnected = false;
     private Socket socket;
@@ -35,7 +35,7 @@ public class Client extends Thread {
     private final Path path = Paths.get(CECS327_GroupAE.DIRECTORY_PATH);
     private ArrayList<String> fileList;
     private ObjectOutputStream oos;
-    private FileClient sc;
+    private FileClient fc;
     
     //private NodeVariables nv;
 
@@ -157,11 +157,11 @@ public class Client extends Thread {
 
     private void getFiles() {
         try{
-            sc = new FileClient();
+            fc = new FileClient();
         for (int i = 1; i < fileList.size(); ++i) {
             try {
                 System.out.println("receiving file: " + fileList.get(i));
-                sc.receiveFile();
+                fc.receiveFile();
                 fileList.remove(fileList.get(i));
                 Thread.sleep(100);
             } catch (Exception e) {
@@ -170,7 +170,7 @@ public class Client extends Thread {
                 Thread.sleep(1000);
                 getFiles();
             }
-            sc.close();
+            fc.close();
         }
         oos.writeObject(fileList);
         }

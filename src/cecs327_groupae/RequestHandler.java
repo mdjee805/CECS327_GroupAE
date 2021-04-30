@@ -105,7 +105,7 @@ public class RequestHandler extends Thread{
             ArrayList<String> fileList = (ArrayList<String>) ois.readObject();
             
             while(fileList.get(0).equals("gimme files")) {
-                FileServer ss = new FileServer(socket.getInetAddress().toString().substring(1));
+                FileServer fs = new FileServer(socket.getInetAddress().toString().substring(1));
                 try{
                 //ss.start();
                 //Thread.sleep(1000);
@@ -113,16 +113,16 @@ public class RequestHandler extends Thread{
                 for (int i = 1; i < fileList.size(); ++i) {
                     File f = new File(CECS327_GroupAE.DIRECTORY_PATH + '/' + fileList.get(i));
                     if (f != null) {
-                        ss.sendFile(f);
+                        fs.sendFile(f);
                         Thread.sleep(100);
                     }
                 }
-                ss.close();
+                fs.close();
                 fileList = (ArrayList<String>) ois.readObject();
                 Thread.sleep(1000);
                 }
                 catch(IOException e) { 
-                    ss.close();
+                    fs.close();
                     fileList = (ArrayList<String>) ois.readObject();
                     Thread.sleep(1000);
                 }

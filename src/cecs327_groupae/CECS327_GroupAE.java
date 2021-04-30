@@ -90,36 +90,36 @@ public class CECS327_GroupAE {
         } catch (IOException e) {}*/
         try {
             //finds all nodes in the network (using port 9000) and returns the opened sockets in an array
-            FindIpAddresses findIps = new FindIpAddresses();
-            nodes = findIps.getSockets();
+            /*FindIpAddresses findIps = new FindIpAddresses();
+            nodes = findIps.getSockets();*/
 
             //constantly running in case a client wants to join the network
-            /*Server server = new Server(prevNextNodes);
+            Server server = new Server(prevNextNodes);
             server.start();
         
             //pause while client side node is looking for nodes in network
             try{
                 Thread.sleep(3000);
             }
-            catch(InterruptedException e) {}*/
+            catch(InterruptedException e) {}
             
             //synchronizing (hash table and) files
-            /*System.out.println(server.getClientIp());
-            SocketServer socketServer = new SocketServer(server.getClientIp());
-            socketServer.start();*/
-            if (!nodes.isEmpty()) { //if a network exists, try to join the network
+            System.out.println(server.getClientIp());
+            FileServer fileServer = new FileServer(server.getClientIp());
+            fileServer.start();
+            /*if (!nodes.isEmpty()) { //if a network exists, try to join the network
                 Client client = new Client(nodes.get(0), prevNextNodes);
                 client.start();
-            }
-
-            //wait while client joins network
-            /*try {
-                Thread.sleep(3000);
-            } catch (InterruptedException e) {
             }*/
 
+            //wait while client joins network
+            try {
+                Thread.sleep(3000);
+            } catch (InterruptedException e) {
+            }
+
             //try to synchronize files
-            FileClient fileClient = new FileClient();
+            //FileClient fileClient = new FileClient();
             System.out.println(prevNextNodes.get(0) + " " + prevNextNodes.get(0));
 
         } catch (Exception e) {

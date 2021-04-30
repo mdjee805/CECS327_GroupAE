@@ -17,16 +17,16 @@ import java.util.ArrayList;
  *
  * @author Michael
  */
-public class FindIpAddresses {
+public class FindIpAddresses extends Thread{
 
     static private String ipAddress, subnet;
     static private ArrayList<String> ipAddresses;
     static private ArrayList<Socket> ipSockets;
     
-    public FindIpAddresses() throws IOException
+    public FindIpAddresses(ArrayList<Socket> ipSockets) throws IOException
     {
         ipAddresses = new ArrayList<String>();
-        ipSockets = new ArrayList<Socket>();
+        this.ipSockets = ipSockets;
     }
     
     public void printIpAddresses()
@@ -38,9 +38,12 @@ public class FindIpAddresses {
         }
     }
     
+    @Override
+    public void run() { }
+    
     public ArrayList<String> getNodes() { return ipAddresses; }
     
-    public ArrayList<Socket> getSockets() throws IOException {
+    public void getSockets() throws IOException {
         try(final DatagramSocket socket = new DatagramSocket()){
         socket.connect(InetAddress.getByName("8.8.8.8"), 10002);
         ipAddress = socket.getLocalAddress().getHostAddress(); //find local ip address
@@ -56,7 +59,6 @@ public class FindIpAddresses {
         //make a bunch of threads and try to connect to all possible ip addresses in the subnet
         int timeout = 1000, threads = 255, devices = 255, split = devices / threads;
         ipAddresses = new ArrayList<String>();
-        ipSockets = new ArrayList<Socket>();
         for (int i = 0; i < threads; ++i) {
             PingingThread thread = new PingingThread(split * i, split * (i + 1), subnet, timeout, ipAddresses, ipSockets);
             thread.start();
@@ -78,6 +80,5 @@ public class FindIpAddresses {
         }
         
         printIpAddresses();
-        return ipSockets; 
     }
 }

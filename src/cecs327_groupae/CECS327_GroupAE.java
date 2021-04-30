@@ -38,18 +38,24 @@ public class CECS327_GroupAE {
         ArrayList<String> prevNextNodes = new ArrayList<String>();
         prevNextNodes.add(""); //1st is prev
         prevNextNodes.add(""); //2nd is next
-        ArrayList<Socket> nodes; //array of sockets of nodes in the network
+        ArrayList<Socket> nodes = new ArrayList<>(); //array of sockets of nodes in the network
         Client client;
         Server server;
 
         try {
             //finds all nodes in the network (using port 9000) and returns the opened sockets in an array
-            FindIpAddresses findIps = new FindIpAddresses();
-            nodes = findIps.getSockets();
+            while(nodes.isEmpty())
+            {
+                FindIpAddresses findIps = new FindIpAddresses(nodes);
+                findIps.getSockets();
+                Thread.sleep(20000);
+            }
+            
 
-            client = new Client(nodes.get(0), prevNextNodes);
-            client.start();
+            ///client = new Client(nodes.get(0), prevNextNodes);
+            //client.start();
 
+            System.out.println("test");
             System.out.println(prevNextNodes.get(0) + " " + prevNextNodes.get(0));
 
             while (true) //constantly running in case a client wants to join the network

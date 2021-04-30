@@ -106,31 +106,27 @@ public class RequestHandler extends Thread{
             
             while(fileList.get(0).equals("gimme files")) {
                 FileServer fs = new FileServer(socket.getInetAddress().toString().substring(1));
-                try{
-                //ss.start();
-                //Thread.sleep(1000);
-                //loop over the number of files wanted and send of the the filesSocketServer ss = new SocketServer(socket.getInetAddress().toString().substring(1));
-                for (int i = 1; i < fileList.size(); ++i) {
-                    File f = new File(CECS327_GroupAE.DIRECTORY_PATH + '/' + fileList.get(i));
-                    if (f != null) {
-                        fs.sendFile(f);
-                        Thread.sleep(100);
+                try {
+                    //ss.start();
+                    //Thread.sleep(1000);
+                    //loop over the number of files wanted and send of the the filesSocketServer ss = new SocketServer(socket.getInetAddress().toString().substring(1));
+                    int size = fileList.size();
+                    for (int i = 1; i < size; ++i) {
+                        File f = new File(CECS327_GroupAE.DIRECTORY_PATH + '/' + fileList.get(i));
+                        if (f != null) {
+                            fs.sendFile(f);
+                            Thread.sleep(1000);
+                        }
                     }
+                } catch (IOException e) {
                 }
                 fs.close();
                 fileList = (ArrayList<String>) ois.readObject();
                 Thread.sleep(1000);
-                }
-                catch(IOException e) { 
-                    fs.close();
-                    fileList = (ArrayList<String>) ois.readObject();
-                    Thread.sleep(1000);
-                }
             }
 
-            System.out.println( "Connection closed" );
-        }
-        catch( Exception e )
+            System.out.println("Connection closed");
+        } catch (Exception e)
         {
             e.printStackTrace();
         }

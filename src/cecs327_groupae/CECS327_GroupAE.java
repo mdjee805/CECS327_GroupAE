@@ -39,89 +39,30 @@ public class CECS327_GroupAE {
         prevNextNodes.add(""); //1st is prev
         prevNextNodes.add(""); //2nd is next
         ArrayList<Socket> nodes; //array of sockets of nodes in the network
-        
-        /*Scanner scan = new Scanner(System.in);
-        String path = "C:/cecs327/test.txt";
-        System.out.print("1. Setup Server\n");
-        System.out.print("2. Setup Client\n");
-        System.out.print("3. Make Folder\n");
-        System.out.print("4. DoublyLinkedList\n");
+        Client client;
+        Server server;
 
-        try {
-            String userInput = scan.nextLine();
-
-            FindIpAddresses findIps = new FindIpAddresses();
-            nodes = findIps.getNodes();
-
-            if (userInput.equals("1")) {
-                SocketServer socketServer = new SocketServer(nodes.get(0), PORT, SERVER_FILE_PATH);
-                socketServer.start();
-            } else if (userInput.equals("2")) {
-                SocketClient socketClient = new SocketClient(PORT, CLIENT_FILE_PATH);
-                socketClient.start();
-            } else if (userInput.equals("3")) {
-                File f1 = new File(SERVER_FILE_PATH);
-
-                boolean bool = f1.mkdir();
-                if (bool) {
-                    System.out.println("Folder is created successfully");
-                } else {
-                    System.out.println("Folder already created!");
-                }
-            } else if(userInput.equals("4"))
-            {
-                DoublyLinkedList DLL = new DoublyLinkedList();
-                DLL.addNode("420.420.420.420");
-                DLL.addNode("1.1.1.1");
-                DLL.addNode("2.2.2.2");
-                DLL.showData();
-                //Node myHead = DLL.getHead();
-                //System.out.println(myHead.data);
-                //System.out.println(myHead.next.data);
-                //System.out.println(myHead.next.next.data);
-                //System.out.println(myHead.next.next.next.data);
-                
-                //System.out.println(myHead.data);
-                //System.out.println(myHead.prev.data);
-                //System.out.println(myHead.prev.prev.data);
-                //System.out.println(myHead.prev.prev.prev.data);
-            }
-
-        } catch (IOException e) {}*/
         try {
             //finds all nodes in the network (using port 9000) and returns the opened sockets in an array
-            /*FindIpAddresses findIps = new FindIpAddresses();
-            nodes = findIps.getSockets();*/
+            FindIpAddresses findIps = new FindIpAddresses();
+            nodes = findIps.getSockets();
 
-            //constantly running in case a client wants to join the network
-            Server server = new Server(prevNextNodes);
-            server.start();
-        
-            //pause while client side node is looking for nodes in network
-            try{
-                Thread.sleep(3000);
-            }
-            catch(InterruptedException e) {}
-            
-            //synchronizing (hash table and) files
-            System.out.println(server.getClientIp());
-            FileServer fileServer = new FileServer(server.getClientIp());
-            fileServer.start();
-            /*if (!nodes.isEmpty()) { //if a network exists, try to join the network
-                Client client = new Client(nodes.get(0), prevNextNodes);
-                client.start();
-            }*/
+            client = new Client(nodes.get(0), prevNextNodes);
+            client.start();
 
-            //wait while client joins network
-            try {
-                Thread.sleep(3000);
-            } catch (InterruptedException e) {
-            }
-
-            //try to synchronize files
-            //FileClient fileClient = new FileClient();
             System.out.println(prevNextNodes.get(0) + " " + prevNextNodes.get(0));
 
+            while (true) //constantly running in case a client wants to join the network
+            {
+                //server should only try to push files if it has an update
+                server = new Server(prevNextNodes);
+                server.start();
+
+                if (!nodes.isEmpty()) { //if a network exists, try to join the network
+                    client = new Client(nodes.get(0), prevNextNodes);
+                    client.start();
+                }
+            }
         } catch (Exception e) {
         }
     }

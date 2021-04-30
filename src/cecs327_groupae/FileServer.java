@@ -72,6 +72,7 @@ public class FileServer extends Thread {
     }*/
 
     public void sendFile(File f) throws IOException {
+        
         //open the file and push to buffer
         oos.writeObject(f.getAbsolutePath());
         oos.writeObject(f.length());

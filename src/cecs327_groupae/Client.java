@@ -126,7 +126,7 @@ public class Client extends Thread {
                 {
                     fileList.set(0, "nah I'm good");
                 }
-                oos.writeObject(fileList);
+                
                 for(int i = 0; i < fileList.size(); ++i)
                 {
                     System.out.println(fileList.get(i));
@@ -141,7 +141,16 @@ public class Client extends Thread {
                 }*/
                 //Thread.sleep(1000);
                 
+                oos.writeObject(fileList);
                 getFiles();
+                while(fileList.size() > 1)
+                {
+                    for(int i = 0; i < fileList.size(); ++i)
+                        System.out.println(fileList.get(i));
+                    Thread.sleep(1000);
+                    oos.writeObject(fileList);
+                    getFiles();
+                }
                 
                 isConnected = true;
 
@@ -158,20 +167,22 @@ public class Client extends Thread {
     private void getFiles() {
         try{
             fc = new FileClient();
-        for (int i = 1; i < fileList.size(); ++i) {
+            int size = fileList.size();
+        for (int i = 1; i < size; ++i) {
+            
             try {
-                System.out.println("receiving file: " + fileList.get(i));
-                fc.receiveFile();
-                fileList.remove(fileList.get(i));
-                Thread.sleep(100);
-            } catch (Exception e) {
-                System.out.println("Error transferring file");
-                oos.writeObject(fileList);
+                String fileReceived = fc.receiveFile();
+                fileReceived = fileReceived.substring(fileReceived.lastIndexOf('\\') + 1);
+                fileList.remove(fileReceived);
+                System.out.println(fileReceived);
                 Thread.sleep(1000);
-                getFiles();
+            } catch (Exception e) {
+                e.printStackTrace();
+                System.out.println("Error transferring file");
             }
-            fc.close();
+            
         }
+        fc.close();
         oos.writeObject(fileList);
         }
         catch(Exception e) { }

@@ -52,7 +52,7 @@ public class FileClient {
         
     }*/
 
-    public void receiveFile() throws IOException {
+    public String receiveFile() throws IOException {
         try {
             String fileString = (String) ois.readObject();
             long fileSize = (long) ois.readObject();
@@ -67,7 +67,7 @@ public class FileClient {
             );
             //while (client.read(buffer)> 0) {
             for (int j = 0; j < Math.ceil((fileSize + 0.0) / buffer.capacity()); ++j) {
-                //while(fileChannel.read(buffer) >= 0 || buffer.position() > 0){
+            //while(fileChannel.read(buffer) >= 0 || buffer.position() > 0){
                 client.read(buffer);
                 buffer.flip();
                 fileChannel.write(buffer);
@@ -75,9 +75,11 @@ public class FileClient {
             }
             fileChannel.close();
             System.out.println("File Received");
+            return fileString;
         } catch (ClassNotFoundException ex) {
             Logger.getLogger(FileClient.class.getName()).log(Level.SEVERE, null, ex);
         }
+        return "";
     }
     
     public void close() {try{client.close();serverSocket.close();}catch(IOException e){}}

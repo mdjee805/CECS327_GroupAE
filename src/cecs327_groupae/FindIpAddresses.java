@@ -39,7 +39,7 @@ public class FindIpAddresses extends Thread{
     }
     
     @Override
-    public void run() { }
+    public void run() { try{getSockets();}catch(IOException e){} }
     
     public ArrayList<String> getNodes() { return ipAddresses; }
     
@@ -60,8 +60,11 @@ public class FindIpAddresses extends Thread{
         int timeout = 1000, threads = 255, devices = 255, split = devices / threads;
         ipAddresses = new ArrayList<String>();
         for (int i = 0; i < threads; ++i) {
-            PingingThread thread = new PingingThread(split * i, split * (i + 1), subnet, timeout, ipAddresses, ipSockets, ipAddress);
-            thread.start();
+            if(!ipAddress.equals(subnet + '.' + i))
+            {
+                PingingThread thread = new PingingThread(split * i, split * (i + 1), subnet, timeout, ipAddresses, ipSockets);
+                thread.start();
+            }
         }
         
         //wait for the timeouts on all the thread's attempted connections

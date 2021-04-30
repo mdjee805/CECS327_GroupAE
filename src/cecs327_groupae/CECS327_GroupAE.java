@@ -46,12 +46,14 @@ public class CECS327_GroupAE {
             //finds all nodes in the network (using port 9000) and returns the opened sockets in an array
             while(nodes.isEmpty())
             {
+                try{
                 FindIpAddresses findIps = new FindIpAddresses(nodes);
                 findIps.start();
-                findIps.getSockets();
                 server = new Server(prevNextNodes);
                 server.start();
                 Thread.sleep(19000);
+                }
+                catch(SocketException e) {}
             }
             
 

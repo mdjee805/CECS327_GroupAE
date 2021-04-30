@@ -19,18 +19,17 @@ import java.util.ArrayList;
 public class PingingThread extends Thread {
 
     int start, end, timeout;
-    String subnet, ipAddress;
+    String subnet;
     ArrayList<String> ipAddresses;
     ArrayList<Socket> ipSockets;
 
-    public PingingThread(int start, int end, String subnet, int timeout, ArrayList<String> ipAddresses, ArrayList<Socket> ipSockets, String ipAddress) {
+    public PingingThread(int start, int end, String subnet, int timeout, ArrayList<String> ipAddresses, ArrayList<Socket> ipSockets) {
         this.start = start;
         this.end = end;
         this.subnet = subnet;
         this.timeout = timeout;
         this.ipAddresses = ipAddresses;
         this.ipSockets = ipSockets;
-        this.ipAddress = ipAddress;
     }
 
     @Override
@@ -43,11 +42,11 @@ public class PingingThread extends Thread {
                         //SocketChannel server = SocketChannel.open();
                         //SocketAddress socketAddr = new InetSocketAddress(host, Integer.parseInt("9000"));
                         Socket socket = new Socket(host, Integer.parseInt(CECS327_GroupAE.PORT));
-                        if (socket.isConnected() && ipAddress != host) {
+                        if (socket.isConnected()) {
                             ipAddresses.add(host);
                             ipSockets.add(socket);
                         }
-                        //server.close();
+                        
                     }
                 } catch (SocketException e) {
                 } catch (UnknownHostException e) {

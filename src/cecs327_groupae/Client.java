@@ -26,7 +26,7 @@ import java.util.*;
  */
 public class Client extends Thread {
     
-        private String server;//, path = "/search?q=banana";
+    private String server;
     private int port;
     boolean isConnected = false;
     private Socket socket;

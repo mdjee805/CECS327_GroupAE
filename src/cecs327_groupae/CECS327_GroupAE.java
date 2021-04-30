@@ -47,8 +47,11 @@ public class CECS327_GroupAE {
             while(nodes.isEmpty())
             {
                 FindIpAddresses findIps = new FindIpAddresses(nodes);
+                findIps.start();
                 findIps.getSockets();
-                Thread.sleep(20000);
+                server = new Server(prevNextNodes);
+                server.start();
+                Thread.sleep(19000);
             }
             
 

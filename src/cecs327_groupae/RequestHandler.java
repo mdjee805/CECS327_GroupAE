@@ -130,9 +130,5 @@ public class RequestHandler extends Thread{
         {
             e.printStackTrace();
         }
-        finally
-        {
-            socket.close();
-        }
     }
 }

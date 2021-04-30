@@ -60,7 +60,7 @@ public class FindIpAddresses extends Thread{
         int timeout = 1000, threads = 255, devices = 255, split = devices / threads;
         ipAddresses = new ArrayList<String>();
         for (int i = 0; i < threads; ++i) {
-            PingingThread thread = new PingingThread(split * i, split * (i + 1), subnet, timeout, ipAddresses, ipSockets);
+            PingingThread thread = new PingingThread(split * i, split * (i + 1), subnet, timeout, ipAddresses, ipSockets, ipAddress);
             thread.start();
         }
         

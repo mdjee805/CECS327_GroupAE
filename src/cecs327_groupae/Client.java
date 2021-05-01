@@ -74,7 +74,7 @@ public class Client extends Thread {
 
                 prevNextNodes.set(1, temp.get(1));
                 System.out.println("next: " + prevNextNodes.get(1));
-                if(prevNextNodes.get(1) == "") //if there is 1 node in the network, we set next as the server, otherwise we steal the server's next
+                if(prevNextNodes.get(1) == ".0") //if there is 1 node in the network, we set next as the server, otherwise we steal the server's next
                 {
                     prevNextNodes.set(1, socket.getInetAddress().toString().substring(1));
                 }

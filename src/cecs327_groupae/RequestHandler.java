@@ -76,7 +76,7 @@ public class RequestHandler extends Thread{
             prevNextNodes.set(0, temp.get(0)); //set Server's previous node to client's previous node ip
             System.out.println("previous: " + prevNextNodes.get(0));
             
-            if (prevNextNodes.get(0).equals("")) { //if we have 1 node in network, we set previous to the client
+            if (prevNextNodes.get(0).equals(".0")) { //if we have 1 node in network, we set previous to the client
                 prevNextNodes.set(0, socket.getInetAddress().toString().substring(1));
                 System.out.println("previous: " + prevNextNodes.get(0));
             } else //if network has more than 1 node, we tell the original previous that its new previous is the original client

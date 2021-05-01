@@ -36,8 +36,8 @@ public class CECS327_GroupAE {
     public static void main(String[] args) {
         //the ip address of the previous and next nodes in the doubly linked list
         ArrayList<String> prevNextNodes = new ArrayList<String>();
-        prevNextNodes.add(""); //1st is prev
-        prevNextNodes.add(""); //2nd is next
+        prevNextNodes.add(".0"); //1st is prev
+        prevNextNodes.add(".0"); //2nd is next
         ArrayList<Socket> nodes = new ArrayList<>(); //array of sockets of nodes in the network
         Client client;
         Server server;

@@ -47,7 +47,7 @@ public class CECS327_GroupAE {
             //we should be checking here for empty string in prevNextNodes, closing the socket then reopening in below loop
             FindIpAddresses findIps = null;
             
-            while(prevNextNodes.get(0).equals(""))//nodes.isEmpty())
+            while(nodes.size() == 0)//nodes.isEmpty())
             {
                 try{
                 findIps = new FindIpAddresses(nodes);
@@ -57,6 +57,10 @@ public class CECS327_GroupAE {
                 Thread.sleep(19000);
                 }
                 catch(SocketException e) {}
+            }
+            for(int i = 0; i < nodes.size(); ++i)
+            {
+                nodes.get(i).close();
             }
             
             ///client = new Client(nodes.get(0), prevNextNodes);

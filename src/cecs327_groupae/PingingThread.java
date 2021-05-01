@@ -46,7 +46,6 @@ public class PingingThread extends Thread {
                             ipAddresses.add(host);
                             //ipSockets.add(socket);
                         }
-                        socket.close();
                     }
                 } catch (SocketException e) {
                 } catch (UnknownHostException e) {

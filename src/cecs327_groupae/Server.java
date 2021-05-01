@@ -33,6 +33,7 @@ public class Server extends Thread {
         port = Integer.parseInt(CECS327_GroupAE.PORT);
         isConnected = false;
         serverSocket = new ServerSocket(port + Integer.parseInt(prevNextNodes.get(1).substring(prevNextNodes.get(1).lastIndexOf('.') + 1))); //open port
+        System.out.println((port + Integer.parseInt(prevNextNodes.get(1).substring(prevNextNodes.get(1).lastIndexOf('.') + 1))));
         this.prevNextNodes = prevNextNodes;
     }
     
@@ -56,7 +57,7 @@ public class Server extends Thread {
                 catch(SocketException e)
                 {
                     System.out.println("Error connecting to port: " + String.valueOf(port));
-                    e.printStackTrace();
+                    //e.printStackTrace();
                 }
                 finally
                 {

@@ -23,20 +23,19 @@ import java.util.logging.Logger;
 
 public class FileClient {
 
-    int port;
-    String path;
     ObjectInputStream ois;
     ByteBuffer buffer;
     SocketChannel client;
-    ServerSocketChannel serverSocket;
 
+    //make a socket connection with fileserver
     public FileClient() {
-        this.port = Integer.parseInt(CECS327_GroupAE.PORT) + 1;
-        this.path = CECS327_GroupAE.DIRECTORY_PATH;
-        this.buffer = ByteBuffer.allocate(1024);
+        //using port 9001 to keep separate socket from port 9000 for joining network if connecting to the same ipaddress
+        int port = Integer.parseInt(CECS327_GroupAE.PORT) + 1;
+        //transfer 1 megabyte at a time
+        buffer = ByteBuffer.allocate(1024);
         try {
-            client = null;
-            serverSocket = ServerSocketChannel.open();
+            //open a channel for connections on this machine at port 9001
+            ServerSocketChannel serverSocket = ServerSocketChannel.open();
             serverSocket.socket().bind(new InetSocketAddress(port));
             client = serverSocket.accept();
             System.out.println("Connection Set:  " + client.getRemoteAddress());
@@ -46,43 +45,47 @@ public class FileClient {
         }
     }
 
-    /*@Override
-    public void run() {
-        super.run();
-        
-    }*/
-
+    //receive files from the socket connection
     public String receiveFile() throws IOException {
         try {
+            //priming read to obtain file's path and size in bytes
             String fileString = (String) ois.readObject();
             long fileSize = (long) ois.readObject();
             System.out.println(fileString);
             System.out.println(fileSize);
 
+            //create a new file at the received path, if it exists, overwrite
+              //we always keep the server's copy of conflicting files
             Path filePath = Paths.get(fileString);
             FileChannel fileChannel = FileChannel.open(filePath,
                     EnumSet.of(StandardOpenOption.CREATE,
                             StandardOpenOption.TRUNCATE_EXISTING,
                             StandardOpenOption.WRITE)
             );
-            //while (client.read(buffer)> 0) {
-            for (int j = 0; j < Math.ceil((fileSize + 0.0) / buffer.capacity()); ++j) {
+            
             //while(fileChannel.read(buffer) >= 0 || buffer.position() > 0){
+            //similar to above line, but does math to deteremine how many times to accept data
+            for (int i = 0; i < Math.ceil((fileSize + 0.0) / buffer.capacity()); ++i) {
+                //read a megabyte from tthe buffer and write it to the file
                 client.read(buffer);
                 buffer.flip();
                 fileChannel.write(buffer);
                 buffer.clear();
             }
             fileChannel.close();
+            
             System.out.println("File Received");
+            //return the file's name if successful so that Client knows it was successful
             return fileString;
+            
         } catch (ClassNotFoundException ex) {
             Logger.getLogger(FileClient.class.getName()).log(Level.SEVERE, null, ex);
         }
+        //return no file name if transfer not successful so that the name is not
+          //removed from the list of requested files
         return "";
     }
-    
-    public void close() {try{client.close();serverSocket.close();}catch(IOException e){}}
 
-    //client.close();
+    //close the connection
+    public void close() { try{ client.close(); } catch(IOException e) {} }
 }

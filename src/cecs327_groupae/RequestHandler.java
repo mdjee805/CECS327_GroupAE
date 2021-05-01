@@ -39,6 +39,8 @@ public class RequestHandler extends Thread{
         this.socket = socket;
         this.prevNextNodes = prevNextNodes;
         this.port = Integer.parseInt(CECS327_GroupAE.PORT);
+        
+        //used to list all files in our shared directory
         File directory = path.toFile();
         files = directory.listFiles();
     }
@@ -52,6 +54,8 @@ public class RequestHandler extends Thread{
         }
         catch (IOException e) {}
     }
+    
+    //exchange previous and next nodes, exchange hashtables, synchronize files
     private void connect() throws IOException
     {
         try
@@ -63,35 +67,32 @@ public class RequestHandler extends Thread{
                 System.out.println(f.getName());
             }
             
-            //send over the previous and next nodes' ip addreeses
+        //1. exchanging previous and next nodes
+            //send over sever's previous and next nodes' ip addreeses
             ObjectOutputStream oos = new ObjectOutputStream(socket.getOutputStream());
             oos.writeObject(prevNextNodes);
             
             //receive client's previous and next nodes' ip addresses
             InputStream is = socket.getInputStream();
             ObjectInputStream ois = new ObjectInputStream(is);
-            ArrayList<String> temp = (ArrayList<String>) ois.readObject();
+            ArrayList<String> clientPrevNextNodes = (ArrayList<String>) ois.readObject();
             
-            //handle adding client into the network
-            prevNextNodes.set(0, temp.get(0)); //set Server's previous node to client's previous node ip
-            System.out.println("previous: " + prevNextNodes.get(0));
-            
+            //handle adding client into the network            
             if (prevNextNodes.get(0).equals(".0")) { //if we have 1 node in network, we set previous to the client
                 prevNextNodes.set(0, socket.getInetAddress().toString().substring(1));
                 System.out.println("previous: " + prevNextNodes.get(0));
             } else //if network has more than 1 node, we tell the original previous that its new previous is the original client
             {
-                Socket prevSocket = new Socket(prevNextNodes.get(0), port);
+                Socket prevSocket = new Socket(prevNextNodes.get(0), Integer.parseInt(CECS327_GroupAE.PORT));
                 oos = new ObjectOutputStream(prevSocket.getOutputStream());
                 oos.writeObject(socket.getInetAddress().toString().substring(1));
             }
 
             //we always set the next node to the client's ip
-            prevNextNodes.set(1, temp.get(1));
-            System.out.println("next: " + prevNextNodes.get(1));
             prevNextNodes.set(1, socket.getInetAddress().toString().substring(1));
             System.out.println("next: " + prevNextNodes.get(1));
 
+        //2. exchanging dhts
             //create new dht from local folder
             Map<String, String> fileMap = new HashMap<>();
             for (File f : files) {
@@ -100,17 +101,18 @@ public class RequestHandler extends Thread{
             }
             System.out.println("hash size: " + fileMap.size());
 
+            //send dht to client
             oos.writeObject(fileMap);
 
-            //await for response for which files the client wants, an empty array list means no files
+            //await for response for which files the client wants, an array list 
+              //with the first item not being "gimme files" means no files requested
             ArrayList<String> fileList = (ArrayList<String>) ois.readObject();
             
+            //while client wants files, create new fileserver and send files
             while(fileList.get(0).equals("gimme files")) {
                 FileServer fs = new FileServer(socket.getInetAddress().toString().substring(1));
                 try {
-                    //ss.start();
-                    //Thread.sleep(1000);
-                    //loop over the number of files wanted and send of the the filesSocketServer ss = new SocketServer(socket.getInetAddress().toString().substring(1));
+                    //loop over the number of files wanted and send the requested file if it exists
                     int size = fileList.size();
                     for (int i = 1; i < size; ++i) {
                         File f = new File(CECS327_GroupAE.DIRECTORY_PATH + '/' + fileList.get(i));
@@ -122,11 +124,11 @@ public class RequestHandler extends Thread{
                 } catch (IOException e) {
                 }
                 fs.close();
+                
+                //check if any files corrupted in transit and client wants them re-sent
                 fileList = (ArrayList<String>) ois.readObject();
                 Thread.sleep(1000);
             }
-
-            System.out.println("Connection closed");
         } catch (Exception e)
         {
             e.printStackTrace();

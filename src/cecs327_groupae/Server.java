@@ -24,54 +24,51 @@ public class Server extends Thread {
     private int port;
     private boolean isConnected;
     private ServerSocket serverSocket;
-    private ArrayList<String> prevNextNodes;
-    private String clientIp;
     private Socket socket;
-    public String getClientIp() { return clientIp; }
+    private ArrayList<String> prevNextNodes;
     
     public Server(ArrayList<String> prevNextNodes) throws IOException {
-        port = Integer.parseInt(CECS327_GroupAE.PORT);
-        isConnected = false;
-        serverSocket = new ServerSocket(port + Integer.parseInt(prevNextNodes.get(1).substring(prevNextNodes.get(1).lastIndexOf('.') + 1))); //open port
-        System.out.println((port + Integer.parseInt(prevNextNodes.get(1).substring(prevNextNodes.get(1).lastIndexOf('.') + 1))));
+        //ip addresses of the previous node and next node, respectively
         this.prevNextNodes = prevNextNodes;
+        //port 9000
+        port = Integer.parseInt(CECS327_GroupAE.PORT);
+        //flag indicating if we should keep looping
+        isConnected = false;
+        //connect using the port of 9000 + last digits of ip address
+        serverSocket = new ServerSocket(port + Integer.parseInt(prevNextNodes.get(1).substring(prevNextNodes.get(1).lastIndexOf('.') + 1)));
+        System.out.println((port + Integer.parseInt(prevNextNodes.get(1).substring(prevNextNodes.get(1).lastIndexOf('.') + 1))));
     }
     
-    public void setPort(int port) { this.port = port; }
-    
+    //manually set port and reconnnect to new socket
+    public void setPort(int port) throws IOException { this.port = port; /*serverSocket = new ServerSocket(port);*/ }
     @Override
     public void run() {
-    while (!isConnected) {
+        //loop while the socket is not connected
+        while (!isConnected) {
             try {
-                System.out.println( "Listening for a client" );
-                
-                //invoke accept method to listen on port
-                try
-                {
-                    //connect to client
+                System.out.println("Listening for a client");
+
+                try {
+                    //connect to client on designated port
                     socket = serverSocket.accept();
-                    
+
+                    //stop looping
                     isConnected = true;
-                }
-                catch(SocketException e)
-                {
+                } catch (SocketException e) {
                     System.out.println("Error connecting to port: " + String.valueOf(port));
                     //e.printStackTrace();
-                }
-                finally
-                {
-                    serverSocket.close();
+                } finally {
+                    //serverSocket.close();
                 }
             } catch (Exception e) {
                 e.printStackTrace();
             }
         }
     }
-    public void startRequestHandler()
-    {
-        //hand off to new thread to keep 'server' thread clear for more connections
+
+    //theoretically, hand off to new thread to keep 'server' thread clear for more connections
+    public void startRequestHandler() {
         RequestHandler reqHand = new RequestHandler(socket, prevNextNodes);
         reqHand.start();
     }
 }
-

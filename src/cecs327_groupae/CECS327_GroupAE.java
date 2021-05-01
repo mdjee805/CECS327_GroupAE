@@ -58,18 +58,18 @@ public class CECS327_GroupAE {
                 }
                 catch(SocketException e) {}
             }
-            for(int i = 0; i < nodes.size(); ++i)
+            /*for(int i = 0; i < nodes.size(); ++i)
             {
                 nodes.get(i).close();
-            }
+            }*/
             
             ///client = new Client(nodes.get(0), prevNextNodes);
             //client.start();
 
-            System.out.println(prevNextNodes.get(0) + " " + prevNextNodes.get(0));
-
             while (true) //constantly running in case a client wants to join the network
             {
+                System.out.println(prevNextNodes.get(0) + " " + prevNextNodes.get(0));
+                
                 //server should only try to push files if it has an update
                 server = new Server(prevNextNodes);
                 server.start();

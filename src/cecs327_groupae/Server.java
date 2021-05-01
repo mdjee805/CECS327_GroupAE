@@ -37,6 +37,8 @@ public class Server extends Thread {
         this.prevNextNodes = prevNextNodes;
     }
     
+    public void setPort(int port) { this.port = port; }
+    
     @Override
     public void run() {
     while (!isConnected) {

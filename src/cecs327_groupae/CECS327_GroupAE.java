@@ -55,6 +55,7 @@ public class CECS327_GroupAE {
                 findIps.start();
                 Thread.sleep(1000);
                 server = new Server(prevNextNodes);
+                server.setPort(Integer.parseInt(PORT));
                 server.start();
                 Thread.sleep(19000);
                 }

@@ -57,8 +57,9 @@ public class CECS327_GroupAE {
                 System.out.println("Trying");
                 findIps = new FindIpAddresses(nodes);
                 findIps.start();
-                prevNextNodes.set(1, findIps.getIpAddresses().get(0));
                 Thread.sleep(1000);
+                System.out.println(prevNextNodes.get(1));
+                prevNextNodes.set(1, findIps.getIpAddresses().get(0));
                 }
                 catch(SocketException e) {
                     System.out.println("CATCH");
@@ -81,14 +82,10 @@ public class CECS327_GroupAE {
                 System.out.println(prevNextNodes.get(0) + " " + prevNextNodes.get(1));
                 
                 //server should only try to push files if it has an update
-                server = new Server(prevNextNodes);
-                server.start();
-                server.startRequestHandler();
+                RequestHandler rh = new RequestHandler(prevNextNodes);
                 System.out.println("BOT WHILE");
-                if (prevNextNodes.get(1).equals("")){//!nodes.isEmpty()) { //if a network exists, try to join the network
-                    client = new Client(/*nodes.get(1),*/ prevNextNodes, findIps.getIpAddress());
-                    client.start();
-                }
+                client = new Client(/*nodes.get(1),*/ prevNextNodes, findIps.getIpAddress());
+                client.start();
             }
         } catch (Exception e) {
         }

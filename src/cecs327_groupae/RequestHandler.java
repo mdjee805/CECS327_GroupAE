@@ -34,9 +34,8 @@ public class RequestHandler extends Thread{
     private File[] files;
     //private NodeVariables nv;
     
-    public RequestHandler(Socket socket, ArrayList<String> prevNextNodes)
+    public RequestHandler(ArrayList<String> prevNextNodes)
     {
-        this.socket = socket;
         this.prevNextNodes = prevNextNodes;
         this.port = Integer.parseInt(CECS327_GroupAE.PORT);
         File directory = path.toFile();
@@ -63,7 +62,8 @@ public class RequestHandler extends Thread{
                 System.out.println(f.getName());
             }
             
-
+            socket = new Socket(prevNextNodes.get(1), (port + Integer.parseInt(prevNextNodes.get(1).substring(prevNextNodes.get(1).lastIndexOf('.') + 1))));
+            
             //send over the previous and next nodes' ip addreeses
             ObjectOutputStream oos = new ObjectOutputStream(socket.getOutputStream());
             oos.writeObject(prevNextNodes);

@@ -26,7 +26,7 @@ public class Server extends Thread {
     private ServerSocket serverSocket;
     private ArrayList<String> prevNextNodes;
     private String clientIp;
-    
+    private Socket socket;
     public String getClientIp() { return clientIp; }
     
     public Server(ArrayList<String> prevNextNodes) throws IOException {
@@ -47,11 +47,9 @@ public class Server extends Thread {
                 try
                 {
                     //connect to client
-                    Socket socket = serverSocket.accept();
+                    socket = serverSocket.accept();
                     
-                    //hand off to new thread to keep 'server' thread clear for more connections
-                    RequestHandler reqHand = new RequestHandler(socket, prevNextNodes);
-                    reqHand.start();
+                    
                     isConnected = true;
                 }
                 catch(SocketException e)
@@ -68,4 +66,11 @@ public class Server extends Thread {
             }
         }
     }
+    public void startRequestHandler()
+    {
+        //hand off to new thread to keep 'server' thread clear for more connections
+        RequestHandler reqHand = new RequestHandler(socket, prevNextNodes);
+        reqHand.start();
+    }
 }
+

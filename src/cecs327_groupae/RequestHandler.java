@@ -63,6 +63,7 @@ public class RequestHandler extends Thread{
                 System.out.println(f.getName());
             }
             
+
             //send over the previous and next nodes' ip addreeses
             ObjectOutputStream oos = new ObjectOutputStream(socket.getOutputStream());
             oos.writeObject(prevNextNodes);

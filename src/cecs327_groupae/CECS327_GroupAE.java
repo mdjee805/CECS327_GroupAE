@@ -33,7 +33,7 @@ public class CECS327_GroupAE {
     /**
      * @param args the command line arguments
      */
-    public static void main(String[] args) {
+    public static void main(String[] args) throws InterruptedException {
         //the ip address of the previous and next nodes in the doubly linked list
         ArrayList<String> prevNextNodes = new ArrayList<String>();
         prevNextNodes.add(".0"); //1st is prev
@@ -85,12 +85,19 @@ public class CECS327_GroupAE {
                 server = new Server(prevNextNodes);
                 server.start();
                 Thread.sleep(1000);
+                try{
                 server.startRequestHandler();
                 System.out.println("BOT WHILE");
                 client = new Client(/*nodes.get(1),*/ prevNextNodes, findIps.getIpAddress());
                 client.start();
+                }catch(Exception e){
+                    Thread.sleep(1000);
+                }
+                Thread.sleep(15000);
             }
+            
         } catch (Exception e) {
+            
         }
     }
 }

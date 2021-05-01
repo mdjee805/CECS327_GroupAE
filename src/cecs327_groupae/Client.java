@@ -176,6 +176,7 @@ public class Client extends Thread {
                 fileReceived = fileReceived.substring(fileReceived.lastIndexOf('\\') + 1);
                 fileList.remove(fileReceived);
                 System.out.println(fileReceived);
+               System.out.println("still want: " + fileList.size());
                 Thread.sleep(1000);
             } catch (Exception e) {
                 e.printStackTrace();

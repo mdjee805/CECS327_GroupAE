@@ -67,11 +67,11 @@ public class Server extends Thread {
             }
         }
     }
-    /*public void startRequestHandler()
+    public void startRequestHandler()
     {
         //hand off to new thread to keep 'server' thread clear for more connections
         RequestHandler reqHand = new RequestHandler(socket, prevNextNodes);
         reqHand.start();
-    }*/
+    }
 }
 

@@ -82,7 +82,10 @@ public class CECS327_GroupAE {
                 System.out.println(prevNextNodes.get(0) + " " + prevNextNodes.get(1));
                 
                 //server should only try to push files if it has an update
-                RequestHandler rh = new RequestHandler(prevNextNodes);
+                server = new Server(prevNextNodes);
+                server.start();
+                Thread.sleep(1000);
+                server.startRequestHandler();
                 System.out.println("BOT WHILE");
                 client = new Client(/*nodes.get(1),*/ prevNextNodes, findIps.getIpAddress());
                 client.start();

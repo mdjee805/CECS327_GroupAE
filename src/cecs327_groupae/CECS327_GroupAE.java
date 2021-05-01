@@ -44,10 +44,13 @@ public class CECS327_GroupAE {
 
         try {
             //finds all nodes in the network (using port 9000) and returns the opened sockets in an array
-            while(nodes.isEmpty())
+            //we should be checking here for empty string in prevNextNodes, closing the socket then reopening in below loop
+            FindIpAddresses findIps = null;
+            
+            while(prevNextNodes.get(0).equals(""))//nodes.isEmpty())
             {
                 try{
-                FindIpAddresses findIps = new FindIpAddresses(nodes);
+                findIps = new FindIpAddresses(nodes);
                 findIps.start();
                 server = new Server(prevNextNodes);
                 server.start();
@@ -56,11 +59,9 @@ public class CECS327_GroupAE {
                 catch(SocketException e) {}
             }
             
-
             ///client = new Client(nodes.get(0), prevNextNodes);
             //client.start();
 
-            System.out.println("test");
             System.out.println(prevNextNodes.get(0) + " " + prevNextNodes.get(0));
 
             while (true) //constantly running in case a client wants to join the network
@@ -69,8 +70,8 @@ public class CECS327_GroupAE {
                 server = new Server(prevNextNodes);
                 server.start();
 
-                if (!nodes.isEmpty()) { //if a network exists, try to join the network
-                    client = new Client(nodes.get(0), prevNextNodes);
+                if (prevNextNodes.get(1).equals("")){//!nodes.isEmpty()) { //if a network exists, try to join the network
+                    client = new Client(/*nodes.get(1),*/ prevNextNodes, findIps.getIpAddress());
                     client.start();
                 }
             }

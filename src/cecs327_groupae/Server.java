@@ -32,7 +32,7 @@ public class Server extends Thread {
     public Server(ArrayList<String> prevNextNodes) throws IOException {
         port = Integer.parseInt(CECS327_GroupAE.PORT);
         isConnected = false;
-        serverSocket = new ServerSocket(port); //open port
+        serverSocket = new ServerSocket(port + Integer.parseInt(prevNextNodes.get(1).substring(prevNextNodes.get(1).lastIndexOf('.') + 1))); //open port
         this.prevNextNodes = prevNextNodes;
     }
     
@@ -47,8 +47,6 @@ public class Server extends Thread {
                 {
                     //connect to client
                     Socket socket = serverSocket.accept();
-                    clientIp = socket.getInetAddress().getHostAddress();
-                    System.out.println(clientIp);
                     
                     //hand off to new thread to keep 'server' thread clear for more connections
                     RequestHandler reqHand = new RequestHandler(socket, prevNextNodes);

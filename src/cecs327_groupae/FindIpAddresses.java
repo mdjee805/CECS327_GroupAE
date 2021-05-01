@@ -84,4 +84,6 @@ public class FindIpAddresses extends Thread{
         
         printIpAddresses();
     }
+    
+    public String getIpAddress() { return ipAddress; }
 }

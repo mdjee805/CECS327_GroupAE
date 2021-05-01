@@ -39,11 +39,11 @@ public class Client extends Thread {
     
     //private NodeVariables nv;
 
-    public Client(Socket serverIp, ArrayList<String> prevNextNodes)
+    public Client(ArrayList<String> prevNextNodes, String ipAddress)
     {
         this.prevNextNodes = prevNextNodes;
-        this.socket = serverIp;
-        this.port = Integer.parseInt(CECS327_GroupAE.PORT);
+        //this.socket = serverIp;
+        this.port = Integer.parseInt(CECS327_GroupAE.PORT) + Integer.parseInt(ipAddress.substring(ipAddress.lastIndexOf('.') + 1));
         File directory = path.toFile();
         this.files = directory.listFiles();
     }
@@ -53,6 +53,7 @@ public class Client extends Thread {
         while (!isConnected) {
             try {
                 System.out.println("Listening for a server");
+                socket = new Socket(prevNextNodes.get(1), port);
                 
                 //send over the previous and next nodes' ip addreeses
                 oos = new ObjectOutputStream(socket.getOutputStream());

@@ -44,9 +44,9 @@ public class PingingThread extends Thread {
                         Socket socket = new Socket(host, Integer.parseInt(CECS327_GroupAE.PORT));
                         if (socket.isConnected()) {
                             ipAddresses.add(host);
-                            ipSockets.add(socket);
+                            //ipSockets.add(socket);
                         }
-                        
+                        socket.close();
                     }
                 } catch (SocketException e) {
                 } catch (UnknownHostException e) {

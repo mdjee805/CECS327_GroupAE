@@ -47,25 +47,27 @@ public class CECS327_GroupAE {
             //we should be checking here for empty string in prevNextNodes, closing the socket then reopening in below loop
             FindIpAddresses findIps = null;
             
-            while(nodes.size() == 0)//nodes.isEmpty())
+            while(prevNextNodes.get(1).equals(".0"))//nodes.isEmpty())
             {
                 try{
-                System.out.println("Trying");
-                findIps = new FindIpAddresses(nodes);
-                findIps.start();
-                Thread.sleep(1000);
                 server = new Server(prevNextNodes);
                 server.setPort(Integer.parseInt(PORT));
                 server.start();
-                Thread.sleep(19000);
+                Thread.sleep(1000);
+                System.out.println("Trying");
+                findIps = new FindIpAddresses(nodes);
+                findIps.start();
+                prevNextNodes.set(1, findIps.getIpAddresses().get(0));
+                Thread.sleep(1000);
                 }
                 catch(SocketException e) {
                     System.out.println("CATCH");
-                    
+                    Thread.sleep(19000);
                 }
             }
+            //nodes.get(0).close();
             System.out.println("finally");
-            prevNextNodes.set(1, nodes.get(0).getInetAddress().toString().substring(1));
+            //prevNextNodes.set(1, nodes.get(0).getInetAddress().toString().substring(1));
             /*for(int i = 0; i < nodes.size(); ++i)
             {
                 nodes.get(i).close();

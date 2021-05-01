@@ -51,7 +51,6 @@ public class Server extends Thread {
                     //connect to client
                     socket = serverSocket.accept();
                     
-                    
                     isConnected = true;
                 }
                 catch(SocketException e)

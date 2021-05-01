@@ -38,6 +38,8 @@ public class FindIpAddresses extends Thread{
         }
     }
     
+    public ArrayList<String> getIpAddresses() { return ipAddresses; }
+    
     @Override
     public void run() { try{getSockets();}catch(IOException e){} }
     

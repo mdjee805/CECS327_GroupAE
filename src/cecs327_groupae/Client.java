@@ -149,7 +149,6 @@ public class Client extends Thread {
                     for(int i = 0; i < fileList.size(); ++i)
                         System.out.println(fileList.get(i));
                     Thread.sleep(1000);
-                    oos.writeObject(fileList);
                     getFiles();
                 }
                 

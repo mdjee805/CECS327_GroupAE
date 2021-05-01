@@ -77,23 +77,21 @@ public class CECS327_GroupAE {
             ///client = new Client(nodes.get(0), prevNextNodes);
             //client.start();
 
+            Thread.sleep(1000);
             while (true) //constantly running in case a client wants to join the network
             {
                 System.out.println(prevNextNodes.get(0) + " " + prevNextNodes.get(1));
+                
+                client = new Client(/*nodes.get(1),*/ prevNextNodes, findIps.getIpAddress());
+                client.start();
                 
                 //server should only try to push files if it has an update
                 server = new Server(prevNextNodes);
                 server.start();
                 Thread.sleep(1000);
-                try{
                 server.startRequestHandler();
-                System.out.println("BOT WHILE");
-                client = new Client(/*nodes.get(1),*/ prevNextNodes, findIps.getIpAddress());
-                client.start();
-                }catch(Exception e){
-                    Thread.sleep(1000);
-                }
-                Thread.sleep(15000);
+                
+                Thread.sleep(30000);
             }
             
         } catch (Exception e) {

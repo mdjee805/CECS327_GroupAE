@@ -91,7 +91,7 @@ public class CECS327_GroupAE {
                 Thread.sleep(1000);
                 server.startRequestHandler();
                 
-                Thread.sleep(30000);
+                Thread.sleep(15000);
             }
             
         } catch (Exception e) {

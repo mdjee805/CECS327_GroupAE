@@ -133,15 +133,7 @@ public class Client extends Thread {
                     System.out.println(fileList.get(i));
                 }
                 
-                //loop over number of strings in the requestedfileslist and prepare to receive
-                //that many files
-                /*if(fileList.size() > 1)
-                {
-                    sc = new SocketClient();
-                    //sc.start();
-                }*/
-                //Thread.sleep(1000);
-                
+                //printing files that is received
                 oos.writeObject(fileList);
                 getFiles();
                 while(fileList.size() > 1)
@@ -157,13 +149,10 @@ public class Client extends Thread {
             } catch (Exception e) {
                 e.printStackTrace();
             }
-            finally
-            {
-                //socket.close();
-            }
         }
     }
-
+    
+    //received files from other nodes
     private void getFiles() {
         try{
             fc = new FileClient();
@@ -175,7 +164,7 @@ public class Client extends Thread {
                 fileReceived = fileReceived.substring(fileReceived.lastIndexOf('\\') + 1);
                 fileList.remove(fileReceived);
                 System.out.println(fileReceived);
-               System.out.println("still want: " + fileList.size());
+                System.out.println("still want: " + fileList.size());
                 Thread.sleep(1000);
             } catch (Exception e) {
                 e.printStackTrace();

@@ -38,6 +38,7 @@ public class FindIpAddresses extends Thread{
         }
     }
     
+    //return all ip address as an array of strings
     public ArrayList<String> getIpAddresses() { return ipAddresses; }
     
     @Override
@@ -77,13 +78,13 @@ public class FindIpAddresses extends Thread{
             System.out.println("Network scan timeout");
         }
         
+        //don't put the local ip address in the list
         for(String s : ipAddresses)
         {
-            //don't put the local ip address in the list
             if(s.equals(ipAddress))
                 ipAddresses.remove(s);
         }
-        
+        //printing ip address
         printIpAddresses();
     }
     

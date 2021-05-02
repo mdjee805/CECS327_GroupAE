@@ -4,8 +4,6 @@
  * and open the template in the editor.
  */
 package cecs327_groupae;
-import com.google.common.collect.ArrayListMultimap;
-import com.google.common.collect.Multimap;
 import java.io.IOException;
 import java.util.*;
 import java.net.DatagramSocket;
@@ -26,6 +24,7 @@ import java.nio.file.Paths;
  */
 public class CECS327_GroupAE {
 
+    //hard code port number and directory path to make life easy
     public static final String PORT = "9000", DIRECTORY_PATH = "C:/cecs327";
     private static final Path path = Paths.get(DIRECTORY_PATH);
     private static File[] files;
@@ -36,25 +35,26 @@ public class CECS327_GroupAE {
     public static void main(String[] args) throws InterruptedException {
         //the ip address of the previous and next nodes in the doubly linked list
         ArrayList<String> prevNextNodes = new ArrayList<String>();
-        prevNextNodes.add(".0"); //1st is prev
-        prevNextNodes.add(".0"); //2nd is next
+        prevNextNodes.add(".0"); //1st is prev (default set to .0)
+        prevNextNodes.add(".0"); //2nd is next (default set to .0)
         ArrayList<Socket> nodes = new ArrayList<>(); //array of sockets of nodes in the network
         Client client;
         Server server;
 
         try {
             //finds all nodes in the network (using port 9000) and returns the opened sockets in an array
-            //we should be checking here for empty string in prevNextNodes, closing the socket then reopening in below loop
+            //we should be checking here for ".0" in prevNextNodes, closing the socket then reopening in below loop
             FindIpAddresses findIps = null;
-            
-            while(prevNextNodes.get(1).equals(".0"))//nodes.isEmpty())
+            while(prevNextNodes.get(1).equals(".0"))
             {
                 try{
+                //open server port
                 server = new Server(prevNextNodes);
                 server.setPort(Integer.parseInt(PORT));
                 server.start();
                 Thread.sleep(1000);
                 System.out.println("Trying");
+                //find all ip address
                 findIps = new FindIpAddresses(nodes);
                 findIps.start();
                 Thread.sleep(1000);
@@ -66,26 +66,17 @@ public class CECS327_GroupAE {
                     Thread.sleep(19000);
                 }
             }
-            //nodes.get(0).close();
-            System.out.println("finally");
-            //prevNextNodes.set(1, nodes.get(0).getInetAddress().toString().substring(1));
-            /*for(int i = 0; i < nodes.size(); ++i)
-            {
-                nodes.get(i).close();
-            }*/
-            
-            ///client = new Client(nodes.get(0), prevNextNodes);
-            //client.start();
+                    
 
             Thread.sleep(1000);
             while (true) //constantly running in case a client wants to join the network
             {
                 System.out.println(prevNextNodes.get(0) + " " + prevNextNodes.get(1));
                 
-                client = new Client(/*nodes.get(1),*/ prevNextNodes, findIps.getIpAddress());
+                client = new Client(prevNextNodes, findIps.getIpAddress());
                 client.start();
                 
-                //server should only try to push files if it has an update
+                //server tries to connect
                 server = new Server(prevNextNodes);
                 server.start();
                 Thread.sleep(1000);

@@ -32,19 +32,19 @@ public class PingingThread extends Thread {
         this.ipSockets = ipSockets;
     }
 
+    //check if ip address can connect to socket
     @Override
     public void run() {
         try {
+           
             for (int i = start; i < end; i++) {
                 String host = subnet + "." + i;
                 try {
                     if (InetAddress.getByName(host).isReachable(timeout)) {
-                        //SocketChannel server = SocketChannel.open();
-                        //SocketAddress socketAddr = new InetSocketAddress(host, Integer.parseInt("9000"));
+                        
                         Socket socket = new Socket(host, Integer.parseInt(CECS327_GroupAE.PORT));
                         if (socket.isConnected()) {
                             ipAddresses.add(host);
-                            //ipSockets.add(socket);
                         }
                     }
                 } catch (SocketException e) {

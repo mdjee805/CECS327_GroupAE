@@ -49,7 +49,6 @@ public class Client extends Thread {
     }
     
     public void connect() throws IOException {
-        //nv = NodeVariablesSingleton.getNodeVariablesSingleton();
         while (!isConnected) {
             try {
                 System.out.println("Listening for a server");

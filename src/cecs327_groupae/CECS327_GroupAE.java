@@ -45,6 +45,7 @@ public class CECS327_GroupAE {
             //finds all nodes in the network (using port 9000) and returns the opened sockets in an array
             //we should be checking here for ".0" in prevNextNodes, closing the socket then reopening in below loop
             FindIpAddresses findIps = null;
+            //establishing/connecting to existing network
             while(prevNextNodes.get(1).equals(".0"))
             {
                 try{
@@ -69,10 +70,10 @@ public class CECS327_GroupAE {
                     
 
             Thread.sleep(1000);
-            while (true) //constantly running in case a client wants to join the network
+            while (true) 
             {
                 System.out.println(prevNextNodes.get(0) + " " + prevNextNodes.get(1));
-                
+                //constantly running in case a client wants to join the network
                 client = new Client(prevNextNodes, findIps.getIpAddress());
                 client.start();
                 

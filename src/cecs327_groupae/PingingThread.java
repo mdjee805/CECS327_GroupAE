@@ -23,6 +23,7 @@ public class PingingThread extends Thread {
     ArrayList<String> ipAddresses;
     ArrayList<Socket> ipSockets;
 
+    //initialize variables
     public PingingThread(int start, int end, String subnet, int timeout, ArrayList<String> ipAddresses, ArrayList<Socket> ipSockets) {
         this.start = start;
         this.end = end;
@@ -43,6 +44,7 @@ public class PingingThread extends Thread {
                     if (InetAddress.getByName(host).isReachable(timeout)) {
                         
                         Socket socket = new Socket(host, Integer.parseInt(CECS327_GroupAE.PORT));
+                        //if it connects, then add it to the list of 'good' ip addresses
                         if (socket.isConnected()) {
                             ipAddresses.add(host);
                         }

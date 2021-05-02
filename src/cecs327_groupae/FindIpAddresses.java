@@ -23,12 +23,14 @@ public class FindIpAddresses extends Thread{
     static private ArrayList<String> ipAddresses;
     static private ArrayList<Socket> ipSockets;
     
+    //initiazes variables
     public FindIpAddresses(ArrayList<Socket> ipSockets) throws IOException
     {
         ipAddresses = new ArrayList<String>();
         this.ipSockets = ipSockets;
     }
     
+    //prints all ip addresses
     public void printIpAddresses()
     {
         System.out.println("Devices on subnet " + subnet + ": ");
@@ -46,6 +48,7 @@ public class FindIpAddresses extends Thread{
     
     public ArrayList<String> getNodes() { return ipAddresses; }
     
+    //probe every possible ip in the subnet
     public void getSockets() throws IOException {
         try(final DatagramSocket socket = new DatagramSocket()){
         socket.connect(InetAddress.getByName("8.8.8.8"), 10002);
